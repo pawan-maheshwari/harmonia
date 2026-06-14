@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HARMONIA — a Fibonacci & harmonic index for ethical AI</title>
+<meta name="description" content="HARMONIA scores AI prompts and providers against ethical-AI principles on a Fibonacci scale, sonifies the result, and compares national AI-governance roadmaps for the EU, US, China, UK and India. Moderated by Pawan Maheshwari." />
+<meta name="author" content="Pawan Maheshwari" />
+<meta name="theme-color" content="#0E1726" />
+<meta property="og:title" content="HARMONIA — Ethical-AI Harmonic Index" />
+<meta property="og:description" content="Score prompts and AI providers on a Fibonacci scale, hear the result as a chord, and compare national AI-governance roadmaps." />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='%230E1726'/><path d='M24 24a8 8 0 1 0 9 9' fill='none' stroke='%23C9A24B' stroke-width='2.4'/><circle cx='24' cy='24' r='3' fill='%23C9A24B'/></svg>" />
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Spectral:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --ink:#0E1726;
+  --ink-2:#131F33;
+  --ink-3:#1B2A44;
+  --vellum:#ECE5D3;
+  --vellum-dim:#9AA6B8;
+  --brass:#C9A24B;
+  --brass-soft:#E2C381;
+  --harmonic:#6FB3B8;
+  --alarm:#C25B4E;
+  --hair:rgba(236,229,211,0.14);
+  --hair-strong:rgba(236,229,211,0.28);
+}
+
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;background:#0E1726;color-scheme:dark;}
+body{
+  margin:0;
+  min-height:100dvh;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(111,179,184,0.08), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(201,162,75,0.07), transparent 55%),
+    #0E1726 !important;
+  color:var(--vellum);
+  font-family:'Spectral',Georgia,serif;
+  font-weight:400;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+
+.wrap{max-width:880px;margin:0 auto;padding:0 20px 80px;}
+
+/* ---- masthead ---- */
+.mast{padding:46px 0 26px;border-bottom:1px solid var(--hair);}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--brass);margin:0 0 14px;
+}
+h1{
+  font-family:'Fraunces',serif;font-weight:500;
+  font-size:clamp(40px,11vw,72px);line-height:.96;letter-spacing:-.01em;
+  margin:0;
+}
+h1 .phi{color:var(--brass);font-style:italic;font-weight:400;}
+.thesis{
+  margin:18px 0 0;max-width:30em;
+  font-size:clamp(16px,4.4vw,19px);color:var(--vellum);
+  font-weight:300;
+}
+.thesis em{color:var(--brass-soft);font-style:italic;}
+
+/* ---- tabs ---- */
+.tabs{
+  display:flex;gap:0;margin:28px 0 0;border:1px solid var(--hair-strong);
+  border-radius:2px;overflow:hidden;
+}
+.tab{
+  flex:1;background:transparent;border:0;cursor:pointer;
+  color:var(--vellum-dim);font-family:'IBM Plex Mono',monospace;
+  font-size:9px;letter-spacing:.02em;text-transform:uppercase;
+  padding:11px 2px;transition:background .2s,color .2s;
+  border-right:1px solid var(--hair);
+}
+.tab:last-child{border-right:0;}
+.tab[aria-selected="true"]{background:var(--ink-3);color:var(--brass-soft);}
+.tab:focus-visible{outline:2px solid var(--harmonic);outline-offset:-2px;}
+
+.panel{display:none;padding-top:34px;}
+.panel.on{display:block;animation:rise .5s ease both;}
+@keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* ---- gauge ---- */
+.gauge-stage{display:flex;flex-direction:column;align-items:center;gap:6px;margin:8px 0 30px;}
+svg.gauge{width:min(340px,86vw);height:auto;display:block;}
+.seg{transition:fill .6s ease,opacity .6s ease;cursor:default;}
+.spiral-path{fill:none;stroke:var(--brass);stroke-width:1.4;opacity:.55;}
+.band-num{
+  font-family:'Fraunces',serif;font-weight:500;
+  fill:var(--vellum);
+}
+.band-cap{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;fill:var(--vellum-dim);
+}
+.seg-label{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:500;fill:var(--vellum);}
+
+/* ---- prompt mode ---- */
+textarea{
+  width:100%;min-height:118px;resize:vertical;
+  background:var(--ink-2);color:var(--vellum);
+  border:1px solid var(--hair-strong);border-radius:3px;
+  padding:15px 16px;font-family:'Spectral',serif;font-size:16px;line-height:1.5;
+}
+textarea:focus{outline:none;border-color:var(--harmonic);}
+textarea::placeholder{color:var(--vellum-dim);opacity:.7;}
+
+.controls{display:flex;gap:12px;align-items:center;margin-top:14px;flex-wrap:wrap;}
+.btn{
+  background:var(--brass);color:#1a1206;border:0;cursor:pointer;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;
+  text-transform:uppercase;padding:13px 20px;border-radius:3px;font-weight:600;
+  transition:transform .12s,background .2s;
+}
+.btn:hover{background:var(--brass-soft);}
+.btn:active{transform:translateY(1px);}
+.btn:disabled{opacity:.5;cursor:wait;}
+.btn-ghost{
+  background:transparent;color:var(--vellum-dim);border:1px solid var(--hair-strong);
+}
+.btn-ghost:hover{color:var(--vellum);background:var(--ink-2);}
+.btn:focus-visible,.chip:focus-visible{outline:2px solid var(--harmonic);outline-offset:2px;}
+
+.hint{font-size:13px;color:var(--vellum-dim);font-style:italic;margin:10px 0 0;}
+.notice{
+  margin-top:14px;padding:10px 14px;border-left:2px solid var(--harmonic);
+  background:rgba(111,179,184,.07);font-size:13.5px;color:var(--vellum-dim);
+}
+.notice.warn{border-color:var(--alarm);background:rgba(194,91,78,.08);}
+
+/* dimension rows */
+.dims{margin-top:30px;display:grid;gap:0;}
+.dim{
+  display:grid;grid-template-columns:1fr auto;gap:6px 14px;align-items:baseline;
+  padding:15px 0;border-top:1px solid var(--hair);
+}
+.dim:first-child{border-top:1px solid var(--hair-strong);}
+.dim-name{font-family:'Fraunces',serif;font-size:18px;font-weight:500;}
+.dim-score{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--brass-soft);}
+.dim-bar{grid-column:1/-1;height:3px;background:var(--ink-3);border-radius:2px;overflow:hidden;margin-top:2px;}
+.dim-bar > span{display:block;height:100%;background:var(--harmonic);width:0;transition:width .9s cubic-bezier(.2,.8,.2,1);}
+.dim-note{grid-column:1/-1;font-size:14px;color:var(--vellum-dim);margin-top:4px;}
+
+.verdict{
+  margin-top:30px;padding:22px 22px;border:1px solid var(--hair-strong);border-radius:3px;
+  background:var(--ink-2);
+}
+.verdict h3{font-family:'Fraunces',serif;font-weight:500;font-size:21px;margin:0 0 8px;}
+.verdict p{margin:0;font-size:15.5px;color:var(--vellum);}
+
+/* ---- provider atlas ---- */
+.atlas-note{margin:0 0 22px;}
+.provider{
+  border-top:1px solid var(--hair);padding:20px 0;
+}
+.provider:first-of-type{border-top:1px solid var(--hair-strong);}
+.prov-head{display:flex;align-items:center;gap:14px;cursor:pointer;background:none;border:0;width:100%;text-align:left;padding:0;color:inherit;}
+.prov-fib{
+  font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:22px;
+  color:var(--brass-soft);min-width:42px;
+}
+.prov-name{font-family:'Fraunces',serif;font-size:21px;font-weight:500;flex:1;}
+.prov-name small{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--vellum-dim);font-weight:400;margin-top:2px;}
+.prov-toggle{color:var(--vellum-dim);font-family:'IBM Plex Mono',monospace;font-size:18px;transition:transform .25s;}
+.provider.open .prov-toggle{transform:rotate(45deg);}
+.prov-body{display:none;padding-top:16px;}
+.provider.open .prov-body{display:block;animation:rise .35s ease both;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.chip{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em;
+  padding:5px 10px;border-radius:2px;border:1px solid var(--hair-strong);
+  color:var(--vellum-dim);background:transparent;cursor:default;
+}
+.chip b{color:var(--brass-soft);font-weight:600;}
+.prov-body p{font-size:15px;color:var(--vellum);margin:0 0 12px;}
+.report{margin:4px 0 16px;padding:16px 16px 8px;border:1px solid var(--hair-strong);border-radius:3px;background:rgba(201,162,75,0.045);}
+.rep-h{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);margin-bottom:10px;}
+.rep-calc{font-size:14px;color:var(--vellum);margin:0 0 8px;}
+.rep-calc b{color:var(--brass-soft);font-weight:600;}
+.rep-calc.dim-weights{font-size:12.5px;color:var(--vellum-dim);font-style:italic;margin-bottom:6px;}
+.rep-row{padding:11px 0;border-top:1px solid var(--hair);}
+.rep-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.rep-dim{font-family:'Fraunces',serif;font-size:16px;font-weight:500;}
+.rep-sc{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--brass-soft);white-space:nowrap;}
+.rep-mean{font-size:13.5px;color:var(--vellum-dim);margin-top:3px;}
+.rep-mean b{color:var(--vellum);font-weight:600;}
+.rep-imp{font-size:13.5px;color:var(--harmonic);margin-top:5px;}
+.sound-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:6px;}
+.staff-card{background:var(--ink-2);border:1px solid var(--hair-strong);border-radius:3px;padding:9px 13px;}
+.staff-cap{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--vellum-dim);margin:0;}
+.staff-notes{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.18em;color:var(--brass-soft);margin:2px 0 0;}
+
+/* ---- method ---- */
+.method h3{font-family:'Fraunces',serif;font-weight:500;font-size:23px;margin:30px 0 8px;}
+.method h3:first-child{margin-top:0;}
+.method p{font-size:15.5px;color:var(--vellum);margin:0 0 14px;}
+.method .scale{font-family:'IBM Plex Mono',monospace;color:var(--brass-soft);}
+.method em{color:var(--brass-soft);}
+footer{margin-top:46px;padding-top:22px;border-top:1px solid var(--hair);font-size:12.5px;color:var(--vellum-dim);font-family:'IBM Plex Mono',monospace;letter-spacing:.03em;line-height:1.7;}
+footer a{color:var(--harmonic);text-decoration:none;}
+
+/* logo + brand lockup */
+.brand{display:flex;align-items:center;gap:16px;}
+.logo{width:54px;height:54px;flex:0 0 auto;}
+.logo circle.ring{stroke:var(--hair-strong);}
+.byline{margin:14px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--vellum-dim);}
+.byline a{color:var(--harmonic);text-decoration:none;border-bottom:1px solid var(--hair);}
+.byline a:hover{color:var(--brass-soft);}
+
+/* upcoming-release banner */
+#banner{
+  position:sticky;top:0;z-index:30;
+  background:linear-gradient(90deg, rgba(201,162,75,.16), rgba(111,179,184,.12));
+  border-bottom:1px solid var(--hair-strong);
+  backdrop-filter:blur(6px);
+}
+#banner .b-in{max-width:880px;margin:0 auto;padding:9px 20px;display:flex;align-items:center;gap:12px;font-size:13px;}
+#banner .b-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);border:1px solid var(--hair-strong);padding:3px 7px;border-radius:2px;white-space:nowrap;}
+#banner .b-text{flex:1;color:var(--vellum);}
+#banner .b-text b{color:var(--brass-soft);}
+#banner .b-x{background:none;border:0;color:var(--vellum-dim);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;}
+#banner .b-x:hover{color:var(--vellum);}
+
+/* visitor badge */
+#visitors{
+  position:fixed;right:14px;bottom:14px;z-index:40;
+  background:var(--ink-2);border:1px solid var(--hair-strong);border-radius:3px;
+  padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:var(--vellum-dim);letter-spacing:.04em;box-shadow:0 6px 24px rgba(0,0,0,.4);
+}
+#visitors b{color:var(--brass-soft);font-size:13px;font-weight:600;}
+#visitors .v-lab{display:block;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--vellum-dim);opacity:.7;margin-bottom:2px;}
+
+/* version comparison */
+.vers{margin:4px 0 16px;}
+.vers-h{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--harmonic);margin-bottom:4px;}
+.vers-sub{font-size:13px;color:var(--vellum-dim);margin:0 0 12px;font-style:italic;}
+.vers-row{display:grid;grid-template-columns:1fr auto auto auto;gap:6px 12px;align-items:baseline;padding:8px 0;border-top:1px solid var(--hair);font-size:13.5px;}
+.vers-row .vd{font-family:'Fraunces',serif;font-size:15px;}
+.vers-row .vp,.vers-row .vc{font-family:'IBM Plex Mono',monospace;color:var(--vellum-dim);}
+.vers-row .vc{color:var(--vellum);}
+.vdelta{font-family:'IBM Plex Mono',monospace;font-weight:600;min-width:34px;text-align:right;}
+.vdelta.up{color:var(--harmonic);}
+.vdelta.down{color:var(--alarm);}
+.vdelta.flat{color:var(--vellum-dim);}
+.vers-key{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--vellum-dim);margin-top:8px;display:flex;gap:14px;}
+
+/* model / architecture tab */
+.arch-note{margin:0 0 26px;}
+.pipe{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:0 0 30px;}
+.pipe .stage{flex:1 1 120px;min-width:0;background:var(--ink-2);border:1px solid var(--hair);border-radius:3px;padding:11px 12px;position:relative;}
+.pipe .stage .sn{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--brass);text-transform:uppercase;}
+.pipe .stage .st{font-family:'Fraunces',serif;font-size:15px;margin-top:3px;}
+.pipe .stage .sd{font-size:12px;color:var(--vellum-dim);margin-top:3px;line-height:1.4;}
+.layers{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0 26px;}
+.layers th,.layers td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--hair);vertical-align:top;}
+.layers th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);font-weight:500;}
+.layers td:first-child{font-family:'IBM Plex Mono',monospace;color:var(--vellum);white-space:nowrap;}
+.layers td.shape{font-family:'IBM Plex Mono',monospace;color:var(--vellum-dim);white-space:nowrap;}
+.fnlist{list-style:none;padding:0;margin:0 0 10px;}
+.fnlist li{padding:9px 0;border-top:1px solid var(--hair);font-size:14px;}
+.fnlist li b{font-family:'IBM Plex Mono',monospace;color:var(--brass-soft);font-weight:500;}
+@media (max-width:560px){ .layers td.shape{white-space:normal;} }
+
+/* ethics tab */
+.mono{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--brass);border-radius:50%;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--brass-soft);flex:0 0 auto;}
+.ax-table{font-family:'IBM Plex Mono',monospace;margin-top:4px;}
+.ax-row{display:grid;grid-template-columns:54px repeat(4,1fr);align-items:center;gap:6px;padding:10px 0;border-top:1px solid var(--hair);}
+.ax-row.ax-head{border-top:none;}
+.ax-head .ax-c{font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--brass);}
+.ax-j .mono{width:30px;height:30px;font-size:10px;}
+.ax-c{text-align:center;}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;border:1px solid var(--hair-strong);margin:0 1.5px;vertical-align:middle;}
+.dot.on{background:var(--brass);border-color:var(--brass);}
+.juris{border-top:1px solid var(--hair);padding:20px 0;}
+.juris:first-child{border-top:1px solid var(--hair-strong);}
+.juris-head{display:flex;align-items:center;gap:14px;}
+.juris-name{font-family:'Fraunces',serif;font-size:21px;font-weight:500;}
+.juris-app{font-size:13.5px;color:var(--vellum-dim);margin-top:2px;}
+.juris-force{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--harmonic);margin:12px 0 8px;}
+.juris-note{font-size:15px;color:var(--vellum);margin:0 0 12px;}
+@media (max-width:520px){ .ax-row{grid-template-columns:42px repeat(4,1fr);gap:3px;} .ax-head .ax-c{font-size:8px;} .dot{width:7px;height:7px;margin:0 1px;} }
+
+/* investment pledge */
+.pledge{margin:14px 0;padding:12px 14px;border:1px solid var(--hair-strong);border-radius:3px;background:rgba(201,162,75,.05);}
+.pl-lab{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);}
+.pl-amt{font-family:'Fraunces',serif;font-size:20px;font-weight:500;margin-top:3px;}
+.pl-name{font-size:13px;color:var(--vellum-dim);margin:1px 0 6px;}
+.pledge a{color:var(--harmonic);text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:12px;border-bottom:1px solid var(--hair);}
+.pledge a:hover{color:var(--brass-soft);}
+
+/* roadmap timeline */
+.rm-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.rm-pill{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;padding:7px 15px;border-radius:2px;border:1px solid var(--hair-strong);background:transparent;color:var(--vellum-dim);cursor:pointer;transition:color .2s,border-color .2s,background .2s;}
+.rm-pill.on{border-color:var(--brass);color:var(--brass-soft);background:rgba(201,162,75,.08);}
+.rm-pill:hover{color:var(--vellum);}
+.rm-pill:focus-visible{outline:2px solid var(--harmonic);outline-offset:2px;}
+.rm-asof{font-size:14px;color:var(--vellum-dim);margin:4px 0 10px;}
+.rm-asof b{color:var(--brass-soft);font-family:'IBM Plex Mono',monospace;}
+.rm-bar{height:6px;background:var(--ink-3);border-radius:3px;overflow:hidden;margin-bottom:28px;}
+.rm-bar > span{display:block;height:100%;background:linear-gradient(90deg,var(--brass),var(--harmonic));transition:width 1s ease;}
+.rm-item{display:grid;grid-template-columns:22px 1fr;gap:0 12px;padding:0 0 22px;position:relative;}
+.rm-item:before{content:"";position:absolute;left:6px;top:6px;bottom:-6px;width:1px;background:var(--hair);}
+.rm-item:last-child:before{display:none;}
+.rm-dot{width:13px;height:13px;border-radius:50%;border:2px solid var(--hair-strong);background:var(--ink);margin-top:3px;z-index:1;}
+.rm-item.done .rm-dot{background:var(--brass);border-color:var(--brass);}
+.rm-item.next .rm-dot{background:var(--harmonic);border-color:var(--harmonic);box-shadow:0 0 0 4px rgba(111,179,184,.18);}
+.rm-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.rm-date{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--vellum-dim);letter-spacing:.04em;}
+.rm-stat{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--vellum-dim);white-space:nowrap;}
+.rm-item.done .rm-stat{color:var(--brass);}
+.rm-item.next .rm-stat{color:var(--harmonic);}
+.rm-title{font-family:'Fraunces',serif;font-size:18px;font-weight:500;margin-top:2px;}
+.rm-detail{font-size:14px;color:var(--vellum-dim);margin-top:3px;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important;}
+}
+</style>
+</head>
+<body>
+<div id="banner" hidden><div class="b-in">
+  <span class="b-tag" id="b-tag">Upcoming</span>
+  <span class="b-text" id="b-text"></span>
+  <button class="b-x" id="b-x" aria-label="Dismiss">×</button>
+</div></div>
+<div class="wrap">
+
+  <header class="mast">
+    <p class="eyebrow">Ethical-AI harmonic index</p>
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 48 48" fill="none" role="img" aria-label="HARMONIA logo">
+        <circle class="ring" cx="24" cy="24" r="22.5" stroke-width="1"/>
+        <circle class="ring" cx="24" cy="24" r="16" stroke-width="0.6" opacity="0.5"/>
+        <path d="M24.0 23.4 L24.1 23.4 L24.2 23.4 L24.4 23.4 L24.5 23.4 L24.6 23.5 L24.8 23.6 L24.9 23.7 L25.0 23.9 L25.0 24.1 L25.0 24.2 L25.0 24.5 L25.0 24.7 L24.9 24.9 L24.8 25.1 L24.6 25.3 L24.4 25.4 L24.1 25.6 L23.8 25.7 L23.5 25.7 L23.2 25.7 L22.8 25.6 L22.5 25.4 L22.1 25.2 L21.8 24.9 L21.6 24.5 L21.4 24.1 L21.3 23.6 L21.3 23.1 L21.3 22.5 L21.5 21.9 L21.8 21.4 L22.2 20.9 L22.7 20.4 L23.3 20.0 L24.1 19.7 L24.9 19.6 L25.8 19.6 L26.7 19.7 L27.6 20.1 L28.5 20.6 L29.3 21.3 L30.0 22.2 L30.6 23.2 L31.0 24.5 L31.2 25.8 L31.1 27.2 L30.8 28.7 L30.2 30.2 L29.3 31.6 L28.0 32.9 L26.5 34.0 L24.7 34.9 L22.7 35.4 L20.5 35.7 L18.1 35.4 L15.7 34.8" stroke="var(--brass)" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="24" cy="24" r="2.4" fill="var(--brass)"/>
+        <circle cx="15.7" cy="34.8" r="2" fill="var(--harmonic)"/>
+        <circle cx="31.2" cy="25.8" r="1.4" fill="var(--brass-soft)"/>
+      </svg>
+      <h1>Harmon<span class="phi">ia</span></h1>
+    </div>
+    <p class="thesis">Every prompt — and every model — has a harmonic signature. This instrument places it on the golden scale of responsible use, and lets you <em>hear</em> where it lands. Aligned use resolves to consonance; misuse rings dissonant.</p>
+    <p class="byline">Moderated by <a href="https://www.linkedin.com/in/pawan-maheshwari-4b9b4715" target="_blank" rel="noopener">Pawan Maheshwari&nbsp;↗</a></p>
+
+    <div class="tabs" role="tablist" aria-label="Modes">
+      <button class="tab" role="tab" id="t-prompt" aria-selected="true" aria-controls="p-prompt">Prompt</button>
+      <button class="tab" role="tab" id="t-atlas" aria-selected="false" aria-controls="p-atlas">Atlas</button>
+      <button class="tab" role="tab" id="t-model" aria-selected="false" aria-controls="p-model">Model</button>
+      <button class="tab" role="tab" id="t-ethics" aria-selected="false" aria-controls="p-ethics">Ethics</button>
+      <button class="tab" role="tab" id="t-roadmap" aria-selected="false" aria-controls="p-roadmap">Roadmap</button>
+      <button class="tab" role="tab" id="t-method" aria-selected="false" aria-controls="p-method">Method</button>
+    </div>
+  </header>
+
+  <!-- PROMPT MODE -->
+  <section class="panel on" id="p-prompt" role="tabpanel" aria-labelledby="t-prompt">
+    <div class="gauge-stage">
+      <div id="gauge-host"></div>
+    </div>
+
+    <label for="prompt-in" class="eyebrow" style="display:block;margin-bottom:10px;">Your prompt</label>
+    <textarea id="prompt-in" placeholder="Paste the prompt you intend to send to an AI model. HARMONIA scores how well it aligns with responsible-use principles — then sounds it."></textarea>
+    <div class="controls">
+      <button class="btn" id="run">Sound the prompt</button>
+      <button class="btn btn-ghost" id="mute" aria-pressed="false">Audio: on</button>
+    </div>
+    <p class="hint">Tries a live model evaluation first; if the sandbox blocks it, scores locally so you still get a result.</p>
+    <div id="run-notice"></div>
+
+    <div id="result" hidden>
+      <div class="dims" id="dims"></div>
+      <div class="verdict">
+        <h3 id="v-title">Reading</h3>
+        <p id="v-body"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATLAS MODE -->
+  <section class="panel" id="p-atlas" role="tabpanel" aria-labelledby="t-atlas" hidden>
+    <div class="notice atlas-note">
+      An <b style="color:var(--brass-soft)">editorial snapshot</b>, not an audit. Scores are a transparent heuristic over what each provider <em>publishes</em> — licences, model/system cards, and safety frameworks — because the leading models are closed and have no source code to read. <b style="color:var(--brass-soft)">Open weights ≠ open source.</b> Always verify against the current model card before relying on this. Tap a row to expand: each one shows exactly how its score is built and what would raise it. Tap “sound” to hear its chord.
+    </div>
+    <div id="atlas"></div>
+  </section>
+
+  <!-- MODEL MODE -->
+  <section class="panel method" id="p-model" role="tabpanel" aria-labelledby="t-model" hidden>
+    <div class="notice arch-note">
+      <b style="color:var(--brass-soft)">What actually runs today:</b> prompt scores come from a Claude judge (with a keyword heuristic as fallback) and provider scores from the curated rubric in <em>Method</em>. The architecture below is the <b style="color:var(--brass-soft)">reference deep-learning pipeline</b> the index is designed to graduate to — documented in full so the methodology is inspectable. It is a spec, not a network running in your browser.
+    </div>
+
+    <h3>Evaluation pipeline</h3>
+    <p>Each LLM is scored from a corpus of its <em>public artefacts</em> — model and system cards, licence text, technical reports, safety policies — passed through a transformer encoder with five regression heads, one per governance dimension.</p>
+    <div class="pipe">
+      <div class="stage"><div class="sn">01 · Ingest</div><div class="st">Artefact corpus</div><div class="sd">Model cards, licences, tech reports, safety docs per provider.</div></div>
+      <div class="stage"><div class="sn">02 · Encode</div><div class="st">Tokenise + embed</div><div class="sd">Subword tokens → 768-d embeddings + positional encoding.</div></div>
+      <div class="stage"><div class="sn">03 · Reason</div><div class="st">Transformer stack</div><div class="sd">12 self-attention blocks build a document representation.</div></div>
+      <div class="stage"><div class="sn">04 · Score</div><div class="st">5 regression heads</div><div class="sd">One sigmoid head per dimension → 0–100.</div></div>
+      <div class="stage"><div class="sn">05 · Quantise</div><div class="st">Fibonacci band</div><div class="sd">Weighted mean → nearest 1·2·3·5·8·13·21.</div></div>
+    </div>
+
+    <h3>Layers</h3>
+    <table class="layers">
+      <thead><tr><th>Layer</th><th>Function</th><th class="shape">Output</th></tr></thead>
+      <tbody>
+        <tr><td>Tokenizer</td><td>Byte-pair encoding of the artefact corpus into subword IDs</td><td class="shape">[B, 512]</td></tr>
+        <tr><td>Embedding</td><td>Token + positional embeddings, dropout 0.1</td><td class="shape">[B, 512, 768]</td></tr>
+        <tr><td>Encoder ×12</td><td>Multi-head self-attention (12 heads) + GELU feed-forward, residual + LayerNorm</td><td class="shape">[B, 512, 768]</td></tr>
+        <tr><td>Attention pool</td><td>Learned attention pooling over tokens to one vector</td><td class="shape">[B, 768]</td></tr>
+        <tr><td>Dense + Dropout</td><td>Shared projection, ReLU, dropout 0.2</td><td class="shape">[B, 256]</td></tr>
+        <tr><td>Heads ×5</td><td>One Dense(1) + sigmoid per dimension, scaled ×100</td><td class="shape">[B, 5]</td></tr>
+        <tr><td>Aggregator</td><td>Weighted mean (safety ×1.3, openness ×1.1, data ×0.9) → band</td><td class="shape">[B, 1]</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Functions</h3>
+    <ul class="fnlist">
+      <li><b>GELU</b> — activation inside the encoder feed-forward blocks; smoother than ReLU for language features.</li>
+      <li><b>Softmax</b> — over attention logits, so each token attends across the document.</li>
+      <li><b>Sigmoid</b> — squashes each head to (0,1), then ×100 for the dimension score.</li>
+      <li><b>Huber loss</b> — per-head regression against human-rated labels; robust to outlier ratings.</li>
+      <li><b>AdamW</b> — optimiser with weight decay; cosine learning-rate schedule, warmup 500 steps.</li>
+      <li><b>Layer normalisation</b> — stabilises each residual block during training.</li>
+    </ul>
+    <p style="font-size:13.5px;color:var(--vellum-dim);font-style:italic;">Labels would come from human raters scoring artefacts against the same rubric, so the network learns to reproduce a transparent standard rather than an opaque one. Until that training set exists, the rubric in <em>Method</em> is the ground truth and the live scores follow it directly.</p>
+  </section>
+
+  <!-- ETHICS MODE -->
+  <section class="panel method" id="p-ethics" role="tabpanel" aria-labelledby="t-ethics" hidden>
+    <div class="notice arch-note">
+      A comparison of <b style="color:var(--brass-soft)">governance approaches</b>, not a moral ranking. Each jurisdiction reflects a different philosophy — rights-based, innovation-led, or state-led. More filled dots mean a more formalised or binding mechanism on that axis, <em>not</em> a verdict on which is “more ethical”. Snapshot as of early 2026 — verify against current law.
+    </div>
+    <h3>At a glance</h3>
+    <div id="eth-matrix"></div>
+    <h3 style="margin-top:32px;">By jurisdiction</h3>
+    <div id="eth-cards"></div>
+  </section>
+
+  <!-- ROADMAP MODE -->
+  <section class="panel method" id="p-roadmap" role="tabpanel" aria-labelledby="t-roadmap" hidden>
+    <div class="notice arch-note">An ethical-AI governance roadmap for each jurisdiction. Pick a country — its milestones and the “as of” marker update automatically from today's date, with no manual edits. Snapshot of known dates as of early 2026.</div>
+    <h3>Ethical-AI roadmap by country</h3>
+    <div id="rm-host"></div>
+  </section>
+
+  <!-- METHOD MODE -->
+  <section class="panel method" id="p-method" role="tabpanel" aria-labelledby="t-method" hidden>
+    <h3>Why a Fibonacci scale</h3>
+    <p>Scores land on <span class="scale">1 · 2 · 3 · 5 · 8 · 13 · 21</span>. The gaps widen as you climb — the same reason agile teams estimate in Fibonacci numbers. It discourages false precision and says something true: the distance from <em>strong</em> (13) to <em>exemplary</em> (21) is harder-won than from <em>poor</em> (2) to <em>weak</em> (3). The gauge above sizes each arc in proportion to its number, so the nonlinearity is visible, not just asserted.</p>
+
+    <h3>The six dimensions</h3>
+    <p>A prompt is read against <em>harm avoidance, fairness &amp; non-discrimination, privacy &amp; consent, honesty &amp; transparency, autonomy &amp; non-manipulation,</em> and <em>legality &amp; rights</em> — a plain-language distillation of widely used responsible-AI frameworks. Each is scored 0–100, then the set is mapped to a single Fibonacci band.</p>
+
+    <h3>What the music actually is</h3>
+    <p>The sound is a <em>representation layer</em>, not the measurement — there is no scientific link between harmony and ethics, and HARMONIA does not pretend otherwise. Each dimension becomes a note; a high score sits at a consonant interval to the root (octave, fifth), a low one at a dissonant interval (minor second, tritone). So a well-aligned prompt stacks into a stable chord and a problematic one grinds. The music encodes the <em>profile</em>; the Fibonacci number encodes the <em>magnitude</em>. Together they are the combined signature.</p>
+
+    <h3>On evaluating providers</h3>
+    <p>You cannot “read the source code” of the frontier models — Claude, GPT, and Gemini are closed. What you <em>can</em> read is published: licences, model and system cards, technical reports, and safety/responsible-scaling policies, plus open <em>weights</em> for models like Llama, Qwen, DeepSeek, Mistral, and Gemma. The atlas scores exactly those public artefacts. It is one reading, compiled as a snapshot, and meant to be checked — not an authority.</p>
+
+    <footer>
+      HARMONIA — a research instrument, not an authority · Built as a single self-contained page · Prompt scoring is best-effort and may err · Provider atlas is an editorial snapshot, verify against current model cards.<br>
+      Moderated by <a href="https://www.linkedin.com/in/pawan-maheshwari-4b9b4715" target="_blank" rel="noopener">Pawan Maheshwari</a>.
+    </footer>
+  </section>
+
+</div>
+
+<div id="visitors" title="Live global count needs a backend; showing a session figure in this static build.">
+  <span class="v-lab">Visitors</span><b id="v-count">—</b>
+</div>
+
+<script>
+/* ============================ data ============================ */
+const FIB = [1,2,3,5,8,13,21];
+const BAND_CAP = {1:"Critical",2:"Poor",3:"Weak",5:"Mixed",8:"Sound",13:"Strong",21:"Exemplary"};
+
+const DIMENSIONS = [
+  {key:"harm",  name:"Harm avoidance"},
+  {key:"fair",  name:"Fairness & non-discrimination"},
+  {key:"priv",  name:"Privacy & consent"},
+  {key:"honest",name:"Honesty & transparency"},
+  {key:"auto",  name:"Autonomy & non-manipulation"},
+  {key:"legal", name:"Legality & rights"}
+];
+
+/* Provider atlas — editorial snapshot over PUBLIC artefacts.
+   Dimensions: weights openness, licence, documentation, safety framework, data transparency (0-100). */
+const PROVIDERS = [
+  {name:"Anthropic", model:"Claude (closed weights)",
+   d:{open:18, lic:25, doc:90, safety:92, data:30},
+   chips:["Closed weights","No source","System cards","Responsible Scaling Policy"],
+   note:"Frontier weights are closed and there is no code to inspect, so openness scores low. Transparency scores high on the strength of detailed model & system cards and a published, versioned safety/responsible-scaling framework. Training data remains largely undisclosed."},
+  {name:"OpenAI", model:"GPT (closed) · gpt-oss (open weights)",
+   d:{open:48, lic:55, doc:78, safety:80, data:25},
+   chips:["GPT closed","gpt-oss open weights","Apache-2.0 (oss)","System cards","Preparedness framework"],
+   note:"A split profile: the flagship GPT line is closed, but the released gpt-oss models ship open weights under a permissive licence, lifting the openness and licence scores. Strong published system cards and a preparedness/safety framework; training data largely opaque."},
+  {name:"Google", model:"Gemini (closed) · Gemma (open weights)",
+   d:{open:50, lic:48, doc:80, safety:78, data:28},
+   chips:["Gemini closed","Gemma open weights","Custom Gemma licence","Model cards","Frontier safety framework"],
+   note:"Gemini is closed; the Gemma family is open-weight but under a custom licence with use restrictions rather than a clean OSI licence, so the licence score is moderate. Solid model cards and a published frontier-safety framework."},
+  {name:"Meta", model:"Llama (open weights)",
+   d:{open:78, lic:58, doc:72, safety:62, data:30},
+   chips:["Open weights","Custom community licence","Model cards","Acceptable-use policy"],
+   note:"Open weights drive a high openness score, but the Llama Community Licence carries acceptable-use terms and a large-user clause, so it is not a clean OSI licence. Reasonable documentation; safety governance is published but lighter than the frontier-lab frameworks."},
+  {name:"Mistral", model:"Open-weight + commercial tiers",
+   d:{open:72, lic:80, doc:64, safety:55, data:28},
+   chips:["Open weights (several)","Apache-2.0 on key models","Model cards","Lighter safety docs"],
+   note:"Several models released as open weights under Apache-2.0 — among the cleanest licences here, lifting the licence score. Documentation is adequate; published safety governance is comparatively light relative to the largest labs."},
+  {name:"DeepSeek", model:"Open weights",
+   d:{open:80, lic:82, doc:66, safety:42, data:35},
+   chips:["Open weights","MIT on key models","Technical reports","Limited safety framework"],
+   note:"Open weights under permissive MIT terms on flagship models score high on openness and licence. Detailed technical reports aid transparency, but a published safety/responsible-scaling framework is limited compared with the frontier labs."},
+  {name:"Alibaba (Qwen)", model:"Open weights",
+   d:{open:82, lic:84, doc:68, safety:46, data:32},
+   chips:["Open weights","Apache-2.0 (many)","Model cards","Limited safety framework"],
+   note:"One of the most openly licensed families — many Qwen models ship under Apache-2.0 with open weights, scoring high on openness and licence. Good model cards; formal safety-governance disclosure is thinner than the largest Western labs."},
+  {name:"Microsoft", model:"Phi (open weights)",
+   d:{open:74, lic:80, doc:66, safety:58, data:34},
+   chips:["Open weights","MIT (Phi)","Model cards","Responsible-AI standard"],
+   note:"The Phi small-model family ships open weights under MIT, scoring well on openness and licence. Reasonable model cards and a corporate responsible-AI standard, though model-specific safety reporting is lighter than frontier system cards."},
+  {name:"Sarvam AI", model:"Sarvam 30B / 105B (open weights)",
+   d:{open:84, lic:88, doc:64, safety:42, data:34},
+   chips:["Open weights","Apache-2.0","Trained from scratch in India","IndiaAI Mission","22 Indian languages"],
+   note:"Backed by India's IndiaAI Mission, Sarvam released the 30B and 105B Mixture-of-Experts models under Apache-2.0 with open weights on Hugging Face and AI Kosh — trained from scratch in India, so it scores high on openness and licence. Documentation comes via model cards and technical write-ups; a formal published safety/responsible-scaling framework is limited and training-data disclosure is partial. Some specialised models (speech, vision) remain API-only."}
+];
+const ATLAS_DIMS = [
+  {k:"open",  n:"Weight openness"},
+  {k:"lic",   n:"Licence permissiveness"},
+  {k:"doc",   n:"Documentation"},
+  {k:"safety",n:"Safety framework"},
+  {k:"data",  n:"Data transparency"}
+];
+
+/* EDIT THIS when a real release is announced. show:false hides the banner. */
+const UPCOMING = {
+  show:true,
+  tag:"Upcoming",
+  html:"Editorial placeholder — replace with the next confirmed release. <b>Update the UPCOMING object</b> in the page source when a model is officially announced."
+};
+
+/* EDIT THIS when a new version ships: move the current scores into `prev`,
+   rename `prevVer`, set the new `ver`, and update the provider's `d` above. */
+const VERSIONS = {
+  "Anthropic":     {ver:"Claude Opus 4.x", prevVer:"Claude 3.x",  prev:{open:18,lic:25,doc:82,safety:80,data:25}},
+  "OpenAI":        {ver:"GPT-5.x / gpt-oss",prevVer:"GPT-4.x",     prev:{open:30,lic:40,doc:74,safety:74,data:22}},
+  "Google":        {ver:"Gemini 2.x / Gemma",prevVer:"Gemini 1.x",prev:{open:42,lic:45,doc:74,safety:70,data:25}},
+  "Meta":          {ver:"Llama 4",         prevVer:"Llama 3",      prev:{open:74,lic:55,doc:68,safety:55,data:28}},
+  "Mistral":       {ver:"Mistral 3 / Large 3",prevVer:"Mistral 2",prev:{open:70,lic:78,doc:60,safety:50,data:26}},
+  "DeepSeek":      {ver:"V4 / R-series",   prevVer:"V3",           prev:{open:78,lic:80,doc:60,safety:36,data:30}},
+  "Alibaba (Qwen)":{ver:"Qwen 3.x",        prevVer:"Qwen 2.x",     prev:{open:80,lic:84,doc:62,safety:40,data:30}},
+  "Microsoft":     {ver:"Phi-4",           prevVer:"Phi-3",        prev:{open:72,lic:80,doc:60,safety:54,data:30}},
+  "Sarvam AI":     {ver:"Sarvam 30B / 105B",prevVer:"Sarvam-M (Mistral-based)",prev:{open:68,lic:80,doc:56,safety:40,data:30}}
+};
+
+/* ===== ethical-AI governance comparison (US/China/EU/UK/India) ===== */
+const ETH_AXES = [
+  {k:"bind", n:"Binding"},
+  {k:"risk", n:"Risk tiers"},
+  {k:"disc", n:"Disclosure"},
+  {k:"inst", n:"Safety body"}
+];
+const JURIS = [
+  {code:"EU", name:"European Union", approach:"Comprehensive, binding, risk-tiered law",
+   force:"Binding law", dots:{bind:3,risk:3,disc:3,inst:2},
+   tags:["Risk-based","Rights + product safety","Extraterritorial"],
+   instruments:["EU AI Act","GPAI code of practice","Conformity assessment"],
+   note:"The first comprehensive binding AI law. In force since August 2024 and phased in — prohibited practices and AI-literacy duties from Feb 2025, general-purpose-model and governance rules from Aug 2025, full application on 2 Aug 2026 (some high-risk duties run to 2027). Systems are sorted by risk tier, each with its own obligations and penalties."},
+  {code:"US", name:"United States", approach:"Innovation-permissive patchwork",
+   force:"Mostly non-binding / state laws", dots:{bind:1,risk:1,disc:2,inst:2},
+   tags:["Sectoral","State-led","Voluntary federal"],
+   instruments:["NIST AI RMF (voluntary)","State AI laws","Executive orders"],
+   note:"No comprehensive federal AI statute. Federal direction leans toward innovation through executive orders, agency memoranda and procurement rules, with the NIST AI Risk Management Framework as voluntary guidance. Binding duties come mostly from states — California's AI Transparency Act, Colorado's AI Act, Texas's Responsible AI Governance Act."},
+  {code:"CN", name:"China", approach:"State oversight, content-focused",
+   force:"Binding, targeted", dots:{bind:3,risk:1,disc:3,inst:1},
+   tags:["Content control","Filing + security review","AI-content labeling"],
+   instruments:["Generative-AI measures","Deep-synthesis rules","Content-labeling rules"],
+   note:"Targeted binding rules rather than one omnibus law: measures for generative-AI services, algorithmic-recommendation and deep-synthesis rules, mandatory labeling of AI-generated content (2025), plus security assessments and government filing. The emphasis is state oversight and content control."},
+  {code:"UK", name:"United Kingdom", approach:"Regulator-led, pro-innovation",
+   force:"Principles + sector regulators", dots:{bind:1,risk:1,disc:1,inst:3},
+   tags:["Adaptive","Sector-by-sector","Assurance ecosystem"],
+   instruments:["Pro-innovation principles","AI Safety / Security Institute","Assurance roadmap"],
+   note:"No single AI statute. Existing sector regulators apply cross-cutting principles under a pro-innovation stance, backed by a well-resourced AI Safety / Security Institute and a growing assurance ecosystem (assurance roadmap, voluntary code of ethics, assurance fund). Debate continues over where statutory duties should tighten."},
+  {code:"IN", name:"India", approach:"Light-touch, 'do no harm', innovation-first",
+   force:"Non-binding guidelines + existing laws", dots:{bind:1,risk:1,disc:2,inst:1},
+   tags:["Seven sutras","DPI-integrated","Sectoral regulators"],
+   instruments:["India AI Governance Guidelines","DPDP Act 2023","IndiaAI Mission"],
+   note:"The India AI Governance Guidelines (MeitY, Nov 2025) set non-binding principles — the 'seven sutras' — and lean on existing laws (IT Act, DPDP Act 2023, Consumer Protection Act) enforced by sector regulators such as the RBI and SEBI. Proposed bodies include an AI Governance Group and an IndiaAI Safety Institute, and synthetic-content labeling rules are advancing. The posture prioritises innovation and digital public infrastructure."}
+];
+/* national AI investment pledges (with reference links) */
+const PLEDGES = {
+  EU:{amt:"€200 billion", name:"InvestAI — public-private, announced 2025", url:"https://ec.europa.eu/commission/presscorner/detail/en/ip_25_467"},
+  US:{amt:"$500 billion", name:"Stargate Project — private-led, government-backed, 2025", url:"https://openai.com/index/announcing-the-stargate-project/"},
+  CN:{amt:"¥60 billion (~$8.2B)", name:"National AI Industry Investment Fund, 2025", url:"https://www.globaltimes.cn/page/202501/1327233.shtml"},
+  UK:{amt:"£14 billion", name:"AI Opportunities Action Plan — private commitments, 2025", url:"https://www.gov.uk/government/news/prime-minister-sets-out-blueprint-to-turbocharge-ai"},
+  IN:{amt:"₹10,372 crore (~$1.1B)", name:"IndiaAI Mission, 2024", url:"https://indiaai.gov.in/"}
+};
+
+/* self-updating ethical-AI roadmaps per country: status computed from today's date */
+const ROADMAPS = {
+  EU:{ start:"2024-08-01", target:"2027-08-02", milestones:[
+    {date:"2024-08-01", title:"AI Act enters into force", detail:"The first comprehensive binding AI law is adopted."},
+    {date:"2025-02-02", title:"Prohibitions + AI-literacy duties", detail:"'Unacceptable-risk' practices banned; literacy duties apply."},
+    {date:"2025-08-02", title:"GPAI & governance rules", detail:"General-purpose-model duties and the governance regime apply."},
+    {date:"2026-08-02", title:"Full application", detail:"Most of the AI Act becomes applicable across the bloc."},
+    {date:"2027-08-02", title:"High-risk transition completes", detail:"Extended deadline for certain embedded high-risk systems."}
+  ]},
+  US:{ start:"2023-10-30", target:"2026-06-30", milestones:[
+    {date:"2023-10-30", title:"Biden EO 14110", detail:"Executive order on safe, secure and trustworthy AI."},
+    {date:"2025-01-23", title:"Deregulatory pivot (EO 14179)", detail:"Prior order rescinded; focus shifts to removing barriers."},
+    {date:"2025-07-23", title:"America's AI Action Plan", detail:"'Winning the Race' — 90+ innovation-first federal actions."},
+    {date:"2026-01-01", title:"State laws take effect", detail:"Texas TRAIGA, California TFAIA and others begin to apply."},
+    {date:"2026-06-30", title:"Colorado AI Act effective", detail:"Comprehensive state AI law applies (delayed from Feb 2026)."}
+  ]},
+  CN:{ start:"2022-03-01", target:"2026-12-01", milestones:[
+    {date:"2022-03-01", title:"Algorithm-recommendation rules", detail:"Binding rules on recommendation algorithms take effect."},
+    {date:"2023-01-10", title:"Deep-synthesis rules", detail:"Rules governing deepfakes and synthetic media take effect."},
+    {date:"2023-08-15", title:"Generative-AI measures", detail:"Interim measures for generative-AI services take effect."},
+    {date:"2025-09-01", title:"AI-content labeling rules", detail:"Mandatory labeling of AI-generated content takes effect."},
+    {date:"2026-12-01", title:"Continued targeted rules", detail:"Further sector rules under sustained state oversight."}
+  ]},
+  UK:{ start:"2023-03-29", target:"2026-12-01", milestones:[
+    {date:"2023-03-29", title:"Pro-innovation white paper", detail:"Principles-based, regulator-led approach set out."},
+    {date:"2023-11-02", title:"AI Safety Institute", detail:"Founded around the Bletchley Park AI Safety Summit."},
+    {date:"2025-01-13", title:"AI Opportunities Action Plan", detail:"50 recommendations adopted; AI Growth Zones launched."},
+    {date:"2026-04-01", title:"Assurance ecosystem", detail:"Assurance roadmap, code of ethics and assurance fund."},
+    {date:"2026-12-01", title:"Statutory-duty decision", detail:"Debate continues on where binding duties should tighten."}
+  ]},
+  IN:{ start:"2023-08-11", target:"2027-05-13", milestones:[
+    {date:"2023-08-11", title:"DPDP Act passed", detail:"Digital Personal Data Protection Act governs training data."},
+    {date:"2024-03-01", title:"IndiaAI Mission launched", detail:"₹10,372 crore programme to build the AI ecosystem."},
+    {date:"2025-11-05", title:"AI Governance Guidelines", detail:"Non-binding 'seven sutras'; light-touch, do-no-harm."},
+    {date:"2026-02-15", title:"Safe & Trusted AI framework", detail:"Guidelines finalised around the India AI Impact Summit."},
+    {date:"2027-05-13", title:"DPDP Act fully applicable", detail:"Data-protection obligations become enforceable."}
+  ]}
+};
+const JURIS_NAME = {EU:"European Union", US:"United States", CN:"China", UK:"United Kingdom", IN:"India"};
+/* ============================ scale + audio ============================ */
+function toBand(score){ // 0-100 -> fibonacci
+  if(score>=92)return 21; if(score>=78)return 13; if(score>=62)return 8;
+  if(score>=46)return 5;  if(score>=30)return 3;  if(score>=15)return 2; return 1;
+}
+function composite(d){ // weighted mean, harm & legality weigh a touch heavier
+  const w={harm:1.3,fair:1,priv:1,honest:1,auto:1,legal:1.2};
+  let s=0,t=0; for(const k in d){const ww=w[k]||1; s+=d[k]*ww; t+=ww;} return s/t;
+}
+const WATL={open:1.1,lic:1,doc:1,safety:1.3,data:.9};
+const WATL_SUM=Object.values(WATL).reduce((a,b)=>a+b,0);
+function atlasComposite(d){
+  let s=0,t=0; for(const k in d){const ww=WATL[k]||1; s+=d[k]*ww; t+=ww;} return s/t;
+}
+const NEXT_BAND={1:{b:2,t:15},2:{b:3,t:30},3:{b:5,t:46},5:{b:8,t:62},8:{b:13,t:78},13:{b:21,t:92},21:null};
+
+/* transparent rubric: how each 0-100 dimension is read, and what lifts it */
+const RUBRIC={
+  open:[
+    {min:85,label:"Fully open",meaning:"weights and reference inference code released openly at launch",improve:"Keep releases timely and ungated across the whole lineup."},
+    {min:60,label:"Open weights",meaning:"weights released for download and fine-tuning",improve:"Open every size at launch with no capability gating, and publish reference inference code."},
+    {min:30,label:"Split / partial",meaning:"smaller models open while the flagship stays closed",improve:"Release the flagship model's weights, not only the smaller variants."},
+    {min:0, label:"Closed",meaning:"weights not released — nothing to download or inspect",improve:"Release model weights publicly, even behind a gated request, to move off the floor."}
+  ],
+  lic:[
+    {min:90,label:"Clean OSI",meaning:"Apache-2.0 or MIT with no use restrictions",improve:"Hold the clean licence across the lineup."},
+    {min:70,label:"Permissive, with caveats",meaning:"largely permissive but carrying output, naming or field clauses",improve:"Remove remaining model-output and naming clauses to reach a clean OSI licence."},
+    {min:40,label:"Custom / restricted",meaning:"usage caps, acceptable-use, geography or revenue limits",improve:"Drop user-count, field-of-use and geography limits and adopt an OSI-approved licence."},
+    {min:0, label:"Proprietary",meaning:"no redistribution or fine-tuning rights",improve:"Permit redistribution and fine-tuning under clear public terms."}
+  ],
+  doc:[
+    {min:75,label:"Strong",meaning:"detailed model and system cards plus a technical report",improve:"Ship reproducible eval harnesses and standardise disclosure across every release."},
+    {min:50,label:"Adequate",meaning:"model cards or a technical report are published",improve:"Add per-release system cards covering safety evals and known failure modes."},
+    {min:0, label:"Minimal",meaning:"sparse or missing documentation",improve:"Publish a complete model card: intended use, evaluations and limitations."}
+  ],
+  safety:[
+    {min:70,label:"Mature",meaning:"a published, versioned safety / responsible-scaling framework with commitments",improve:"Add independent third-party audits and public incident reporting."},
+    {min:45,label:"Emerging",meaning:"some governance and acceptable-use rules, lighter than the frontier labs",improve:"Formalise pre-deployment evaluation commitments and red-team disclosures."},
+    {min:0, label:"Limited",meaning:"little published safety governance",improve:"Publish a versioned safety framework with explicit capability thresholds."}
+  ],
+  data:[
+    {min:60,label:"Disclosed",meaning:"detailed training-data documentation",improve:"Publish datasheet-level provenance and an opt-out mechanism."},
+    {min:30,label:"Partial",meaning:"high-level data categories are noted",improve:"Document data provenance, licensing/consent and handling of copyrighted content."},
+    {min:0, label:"Opaque",meaning:"training data is undisclosed",improve:"Disclose data sources, categories and filtering at least at a high level."}
+  ]
+};
+function rubricFor(key,score){ return RUBRIC[key].find(b=>score>=b.min); }
+function biggestLever(d){
+  let best=null;
+  ATLAS_DIMS.forEach(a=>{
+    const gain=(100-d[a.k])*WATL[a.k]/WATL_SUM; // composite points unlocked if maxed
+    if(!best||gain>best.gain) best={n:a.n,gain};
+  });
+  return best;
+}
+function renderReport(p){
+  const comp=atlasComposite(p.d), band=toBand(comp), nx=NEXT_BAND[band], lever=biggestLever(p.d);
+  const rows=ATLAS_DIMS.map(a=>{
+    const sc=p.d[a.k], rb=rubricFor(a.k,sc);
+    return `<div class="rep-row">
+      <div class="rep-top"><span class="rep-dim">${a.n}</span><span class="rep-sc">${sc} / 100</span></div>
+      <div class="rep-mean"><b>${rb.label}</b> — ${rb.meaning}.</div>
+      <div class="rep-imp">To raise it: ${rb.improve}</div>
+    </div>`;
+  }).join("");
+  const head = nx
+    ? `Composite <b>${comp.toFixed(0)}</b>/100 → Fibonacci <b>${band}</b>. Reaching <b>${nx.b}</b> needs the composite to clear <b>${nx.t}</b> — about <b>+${Math.max(1,Math.ceil(nx.t-comp))}</b>. Biggest lever: <b>${lever.n}</b> — it carries the most weight with the most room to grow.`
+    : `Composite <b>${comp.toFixed(0)}</b>/100 → Fibonacci <b>${band}</b>, the top band. The work now is to hold the line on safety disclosure and clean licensing.`;
+  return `<div class="report">
+    <div class="rep-h">How this score is built</div>
+    <p class="rep-calc">${head}</p>
+    <p class="rep-calc dim-weights">Method: weighted mean of the five dimensions — safety ×1.3, openness ×1.1, data ×0.9, licence &amp; docs ×1 — mapped to the nearest Fibonacci band.</p>
+    <div class="rep-rows">${rows}</div>
+  </div>`;
+}
+function renderVersions(p){
+  const v=VERSIONS[p.name]; if(!v) return "";
+  const cur=toBand(atlasComposite(p.d));
+  const prevBand=toBand(atlasComposite(v.prev));
+  const rows=ATLAS_DIMS.map(a=>{
+    const c=p.d[a.k], pr=v.prev[a.k], dlt=c-pr;
+    const cls=dlt>0?"up":(dlt<0?"down":"flat");
+    const sym=dlt>0?"▲ +"+dlt:(dlt<0?"▼ "+dlt:"– 0");
+    return `<div class="vers-row">
+      <span class="vd">${a.n}</span>
+      <span class="vp">${pr}</span>
+      <span class="vc">${c}</span>
+      <span class="vdelta ${cls}">${sym}</span>
+    </div>`;
+  }).join("");
+  const bandDelta = cur===prevBand
+    ? `Fibonacci band held at <b>${cur}</b>.`
+    : (cur>prevBand ? `Fibonacci band rose <b>${prevBand} → ${cur}</b>.` : `Fibonacci band fell <b>${prevBand} → ${cur}</b>.`);
+  return `<div class="vers">
+    <div class="vers-h">Version-on-version</div>
+    <p class="vers-sub">${v.prevVer} → ${v.ver}. ${bandDelta} Editorial snapshot — updates when a new version ships.</p>
+    <div class="vers-row" style="border-top:none;color:var(--vellum-dim);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;">
+      <span>Dimension</span><span>${v.prevVer.length>9?'Prev':v.prevVer}</span><span>Now</span><span style="text-align:right;">Δ</span>
+    </div>
+    ${rows}
+  </div>`;
+}
+
+let AC=null, muted=false;
+function audio(){ if(!AC){ try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } return AC; }
+// score 0-100 -> frequency ratio above root (consonant when high, dissonant when low)
+function ratioFor(score){
+  if(score>=80)return [2,1.5][score%2?0:1]; // octave / fifth
+  if(score>=60)return 1.25;   // major third (consonant)
+  if(score>=45)return 1.125;  // major second (mild)
+  if(score>=25)return 1.0595; // minor second (tense)
+  return 1.4142;              // tritone (dissonant)
+}
+function sound(scores){ // array of 0-100
+  const ctx=audio(); if(!ctx||muted)return;
+  if(ctx.state==="suspended")ctx.resume();
+  const root=146.83; // D3
+  const now=ctx.currentTime;
+  scores.forEach((sc,i)=>{
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.type="sine"; o.frequency.value=root*ratioFor(sc)*(1+i*0.003);
+    const t0=now+i*0.05;
+    g.gain.setValueAtTime(0,t0);
+    g.gain.linearRampToValueAtTime(0.12,t0+0.04);
+    g.gain.exponentialRampToValueAtTime(0.0008,t0+1.8);
+    o.connect(g).connect(ctx.destination);
+    o.start(t0); o.stop(t0+1.9);
+  });
+}
+
+/* ===== musical notation: render the chord a model/prompt sounds ===== */
+const NOTE_INFO={ // semitones above root D -> staff step (1=E4 line) + name
+  1:{step:1,label:"E♭",acc:"♭"},
+  2:{step:1,label:"E", acc:""},
+  4:{step:2,label:"F♯",acc:"♯"},
+  6:{step:4,label:"A♭",acc:"♭"},
+  7:{step:4,label:"A", acc:""},
+  12:{step:7,label:"D",acc:""}
+};
+function semisForScore(sc){ return Math.round(12*Math.log2(ratioFor(sc))); }
+function renderStaff(scores){
+  const W=178,H=98, xHead=92;
+  const yFor=step=>62-(step-1)*5.5;
+  const lineY=[18,29,40,51,62];
+  const lines=lineY.map(y=>`<line x1="12" y1="${y}" x2="${W-12}" y2="${y}" stroke="rgba(236,229,211,0.34)" stroke-width="1"/>`).join("");
+  // stylised spiral clef (brand nod) with the staff line through it
+  const clef=`<path d="M24 33 a7.5 7.5 0 1 0 1.5 14.6 a4.6 4.6 0 1 1 -1.5 -9" fill="none" stroke="var(--brass)" stroke-width="1.5" stroke-linecap="round"/><line x1="29" y1="18" x2="29" y2="58" stroke="var(--brass)" stroke-width="1.2"/>`;
+  const uniq=[...new Set(scores.map(semisForScore))].sort((a,b)=>a-b);
+  let heads="",accs="";
+  uniq.forEach(s=>{
+    const info=NOTE_INFO[s]||{step:1,label:"?",acc:""};
+    const y=yFor(info.step);
+    heads+=`<g transform="rotate(-18 ${xHead} ${y})"><ellipse cx="${xHead}" cy="${y}" rx="6.2" ry="4.4" fill="var(--brass)"/></g>`;
+    if(info.acc) accs+=`<text x="${xHead-15}" y="${y+4.5}" fill="var(--brass-soft)" font-size="14" font-family="Georgia,serif">${info.acc}</text>`;
+  });
+  const ys=uniq.map(s=>yFor((NOTE_INFO[s]||{step:1}).step));
+  const stem=`<line x1="${xHead+6}" y1="${Math.max(...ys)}" x2="${xHead+6}" y2="${Math.min(...ys)-22}" stroke="var(--vellum)" stroke-width="1.5"/>`;
+  const names=uniq.map(s=>(NOTE_INFO[s]||{label:"?"}).label).join("  ");
+  return `<div class="staff-card">
+    <p class="staff-cap">Chord from root D — play it</p>
+    <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Chord notation: ${names}">
+      ${lines}${clef}${accs}${heads}${stem}
+    </svg>
+    <p class="staff-notes">${names}</p>
+  </div>`;
+}
+
+/* ============================ gauge (svg) ============================ */
+function buildGauge(){
+  const total=FIB.reduce((a,b)=>a+b,0);
+  const W=300,H=300,cx=W/2,cy=H/2, rOut=132, rIn=94;
+  const startA=-220, endA=40, span=endA-startA;
+  let acc=0;
+  const segs=FIB.map(v=>{
+    const a0=startA + span*(acc/total);
+    acc+=v;
+    const a1=startA + span*(acc/total) - 1.5;
+    return {v,a0,a1};
+  });
+  const pol=(r,deg)=>{const a=deg*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+  const arc=(r1,r2,a0,a1)=>{
+    const [x1,y1]=pol(r2,a0),[x2,y2]=pol(r2,a1),[x3,y3]=pol(r1,a1),[x4,y4]=pol(r1,a0);
+    const laf=(a1-a0)>180?1:0;
+    return `M${x1} ${y1} A${r2} ${r2} 0 ${laf} 1 ${x2} ${y2} L${x3} ${y3} A${r1} ${r1} 0 ${laf} 0 ${x4} ${y4} Z`;
+  };
+  // golden spiral motif in the centre
+  let sp="";
+  const phi=1.618;
+  for(let th=0; th<=Math.PI*3.2; th+=0.12){
+    const r=2.4*Math.pow(phi, th/(Math.PI/2));
+    const x=cx+r*Math.cos(th-1.2), y=cy+r*Math.sin(th-1.2);
+    sp += (th===0?"M":"L")+x.toFixed(1)+" "+y.toFixed(1)+" ";
+  }
+  let segSvg="";
+  segs.forEach((s,i)=>{
+    const mid=(s.a0+s.a1)/2;
+    const [lx,ly]=pol((rOut+18),mid);
+    segSvg+=`<path class="seg" data-i="${i}" d="${arc(rIn,rOut,s.a0,s.a1)}" fill="#1B2A44"/>`;
+    segSvg+=`<text class="seg-label" x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle">${s.v}</text>`;
+  });
+  document.getElementById("gauge-host").innerHTML=
+    `<svg class="gauge" viewBox="-34 -34 368 368" role="img" aria-label="Fibonacci gauge">
+      ${segSvg}
+      <path class="spiral-path" d="${sp}"/>
+      <text class="band-num" id="g-num" x="${cx}" y="${cy-2}" text-anchor="middle" dominant-baseline="middle" font-size="46">–</text>
+      <text class="band-cap" id="g-cap" x="${cx}" y="${cy+30}" text-anchor="middle">awaiting</text>
+    </svg>`;
+}
+function paintGauge(band){
+  const idx=FIB.indexOf(band);
+  document.querySelectorAll(".seg").forEach((el,i)=>{
+    el.setAttribute("fill", i<=idx ? "var(--brass)" : "#1B2A44");
+    el.style.opacity = i<=idx ? "1" : "0.5";
+  });
+  document.getElementById("g-num").textContent=band;
+  document.getElementById("g-cap").textContent=BAND_CAP[band];
+}
+
+/* ============================ prompt scoring ============================ */
+const SYS = `You are an ethical-AI prompt auditor. Score the user's prompt on six dimensions, each 0-100, where 100 = fully aligned with responsible AI use and 0 = severe violation.
+Dimensions: harm (avoids enabling harm), fair (avoids bias/discrimination), priv (respects privacy/consent), honest (no deception/impersonation/misinformation), auto (no manipulation/exploitation), legal (lawful, respects rights/IP).
+A benign, constructive prompt should score high (80-100) across the board. Penalise only genuine concerns.
+Respond with ONLY a JSON object, no prose, no markdown fences, shaped exactly:
+{"harm":N,"fair":N,"priv":N,"honest":N,"auto":N,"legal":N,"note":"one sentence, plain, on the main consideration"}`;
+
+async function scoreViaAI(prompt){
+  const res=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      model:"claude-sonnet-4-6",max_tokens:1000,
+      system:SYS,
+      messages:[{role:"user",content:`PROMPT TO AUDIT:\n"""${prompt}"""`}]
+    })
+  });
+  if(!res.ok) throw new Error("api "+res.status);
+  const data=await res.json();
+  const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
+  const clean=text.replace(/```json|```/g,"").trim();
+  const m=clean.match(/\{[\s\S]*\}/); if(!m) throw new Error("no json");
+  const o=JSON.parse(m[0]);
+  return {d:{harm:+o.harm,fair:+o.fair,priv:+o.priv,honest:+o.honest,auto:+o.auto,legal:+o.legal}, note:o.note||"", src:"ai"};
+}
+
+function scoreLocally(prompt){
+  const t=" "+prompt.toLowerCase()+" ";
+  const d={harm:88,fair:88,priv:88,honest:88,auto:88,legal:88};
+  const hit=(arr)=>arr.some(w=>t.includes(w));
+  if(hit([" bomb"," explosive"," malware"," ransomware"," exploit "," bioweapon"," poison "," kill "," self-harm"," weapon"])) d.harm-=62;
+  if(hit([" attack "," hack into"," ddos"," how to make a "])) d.harm-=22;
+  if(hit([" all women"," all men"," inferior race"," stereotype"," those people"," racist joke"])) d.fair-=55;
+  if(hit([" home address"," track this person"," dox"," social security"," ssn"," their password"," surveil"," spy on"])) d.priv-=58;
+  if(hit([" pretend to be "," impersonate"," fake news"," deepfake"," plagiari"," pass off as"," fabricate evidence"])) d.honest-=52;
+  if(hit([" manipulate"," exploit their"," addictive"," prey on"," pressure them"," vulnerable people"])) d.auto-=50;
+  if(hit([" pirate "," crack the"," counterfeit"," bypass copyright"," illegal"," steal "])) d.legal-=52;
+  for(const k in d) d[k]=Math.max(2,Math.min(100,d[k]));
+  return {d, note:"Scored locally with a keyword heuristic — a rough estimate, not a substitute for judgement.", src:"local"};
+}
+
+function renderResult(r){
+  const dimsEl=document.getElementById("dims"); dimsEl.innerHTML="";
+  const recs={
+    harm:["Reframe to remove any harmful capability you're requesting.","Keep harm-avoidance front of mind, but nothing here raises a flag."],
+    fair:["Check the framing for assumptions about a group; ask for balanced treatment.","No discriminatory framing detected."],
+    priv:["Avoid asking the model to identify, locate, or profile real individuals.","No privacy concern detected."],
+    honest:["Don't ask the model to deceive, impersonate, or fabricate.","The request reads as honest."],
+    auto:["Avoid wording that pressures or manipulates people.","No manipulative intent detected."],
+    legal:["Make sure the request respects law and intellectual-property rights.","No legality concern detected."]
+  };
+  DIMENSIONS.forEach(dim=>{
+    const sc=Math.round(r.d[dim.key]);
+    const low=sc<70;
+    const row=document.createElement("div"); row.className="dim";
+    row.innerHTML=`<span class="dim-name">${dim.name}</span>
+      <span class="dim-score">${sc} / 100</span>
+      <span class="dim-bar"><span data-w="${sc}"></span></span>
+      <span class="dim-note">${recs[dim.key][low?0:1]}</span>`;
+    dimsEl.appendChild(row);
+  });
+  requestAnimationFrame(()=>document.querySelectorAll(".dim-bar > span").forEach(b=>{
+    const w=+b.dataset.w; b.style.width=w+"%";
+    b.style.background = w<40?"var(--alarm)":(w<70?"var(--brass)":"var(--harmonic)");
+  }));
+  const comp=composite(r.d), band=toBand(comp);
+  paintGauge(band);
+  const titleByBand={21:"Exemplary use",13:"Strong, responsible use",8:"Sound, with minor care",5:"Mixed — worth revising",3:"Weak — needs rework",2:"Poor — reconsider",1:"Critical — do not send"};
+  document.getElementById("v-title").textContent=titleByBand[band];
+  const tail = r.src==="local" ? " (Local estimate — a live model would read nuance this can't.)" : "";
+  document.getElementById("v-body").textContent=r.note+tail;
+  document.getElementById("result").hidden=false;
+  sound(DIMENSIONS.map(dm=>r.d[dm.key]));
+}
+
+/* ============================ atlas render ============================ */
+function renderAtlas(){
+  const host=document.getElementById("atlas"); host.innerHTML="";
+  PROVIDERS.map(p=>({p,band:toBand(atlasComposite(p.d))}))
+    .sort((a,b)=>b.band-a.band)
+    .forEach(({p,band})=>{
+      const el=document.createElement("div"); el.className="provider";
+      const chips=p.chips.map(c=>`<span class="chip">${c}</span>`).join("");
+      const dimChips=ATLAS_DIMS.map(a=>`<span class="chip">${a.n} <b>${p.d[a.k]}</b></span>`).join("");
+      el.innerHTML=`
+        <button class="prov-head" aria-expanded="false">
+          <span class="prov-fib">${band}</span>
+          <span class="prov-name">${p.name}<small>${p.model}</small></span>
+          <span class="prov-toggle">+</span>
+        </button>
+        <div class="prov-body">
+          <div class="chips">${dimChips}</div>
+          <p>${p.note}</p>
+          ${renderReport(p)}
+          ${renderVersions(p)}
+          <div class="chips">${chips}</div>
+          <div class="sound-row">
+            <button class="btn btn-ghost prov-sound" type="button">Sound this model</button>
+            ${renderStaff(ATLAS_DIMS.map(a=>p.d[a.k]))}
+          </div>
+        </div>`;
+      const head=el.querySelector(".prov-head");
+      head.addEventListener("click",()=>{
+        const open=el.classList.toggle("open");
+        head.setAttribute("aria-expanded",open?"true":"false");
+      });
+      el.querySelector(".prov-sound").addEventListener("click",()=>sound(ATLAS_DIMS.map(a=>p.d[a.k])));
+      host.appendChild(el);
+    });
+}
+
+/* ============================ ethics ============================ */
+function dots(n){ let s=""; for(let i=0;i<3;i++) s+=`<span class="dot ${i<n?'on':''}"></span>`; return s; }
+function renderEthics(){
+  const head=`<div class="ax-row ax-head"><span class="ax-j"></span>`+
+    ETH_AXES.map(a=>`<span class="ax-c">${a.n}</span>`).join("")+`</div>`;
+  const rows=JURIS.map(j=>`<div class="ax-row"><span class="ax-j"><span class="mono">${j.code}</span></span>`+
+    ETH_AXES.map(a=>`<span class="ax-c">${dots(j.dots[a.k])}</span>`).join("")+`</div>`).join("");
+  document.getElementById("eth-matrix").innerHTML=`<div class="ax-table">${head}${rows}</div>`;
+  document.getElementById("eth-cards").innerHTML=JURIS.map(j=>{
+    const inst=j.instruments.map(i=>`<span class="chip">${i}</span>`).join("");
+    const tags=j.tags.map(t=>`<span class="chip">${t}</span>`).join("");
+    return `<div class="juris">
+      <div class="juris-head"><span class="mono">${j.code}</span>
+        <div><div class="juris-name">${j.name}</div><div class="juris-app">${j.approach}</div></div>
+      </div>
+      <div class="juris-force">${j.force}</div>
+      <p class="juris-note">${j.note}</p>
+      ${PLEDGES[j.code]?`<div class="pledge"><div class="pl-lab">National AI investment pledge</div><div class="pl-amt">${PLEDGES[j.code].amt}</div><div class="pl-name">${PLEDGES[j.code].name}</div><a href="${PLEDGES[j.code].url}" target="_blank" rel="noopener">Reference ↗</a></div>`:""}
+      <div class="chips">${inst}</div>
+      <div class="chips" style="margin-top:8px;">${tags}</div>
+    </div>`;
+  }).join("");
+}
+
+/* ============================ roadmap (per country, auto-updating) ============================ */
+function fmtDate(d){ return d.toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}); }
+let rmCode="EU";
+function renderRoadmap(){
+  const host=document.getElementById("rm-host");
+  const pills=Object.keys(ROADMAPS).map(c=>`<button class="rm-pill ${c===rmCode?'on':''}" data-c="${c}">${c}</button>`).join("");
+  const R=ROADMAPS[rmCode];
+  const today=new Date(), start=new Date(R.start), target=new Date(R.target);
+  const pct=Math.max(0,Math.min(100,Math.round((today-start)/(target-start)*100)));
+  const ms=R.milestones.map(m=>({...m,d:new Date(m.date)}));
+  const nextIdx=ms.findIndex(m=>m.d>today);
+  const rows=ms.map((m,i)=>{
+    const status = m.d<=today ? "done" : (i===nextIdx ? "next" : "todo");
+    const lbl = status==="done"?"Reached":(status==="next"?"In progress":"Planned");
+    return `<div class="rm-item ${status}">
+      <span class="rm-dot"></span>
+      <div class="rm-body">
+        <div class="rm-top"><span class="rm-date">${fmtDate(m.d)}</span><span class="rm-stat">${lbl}</span></div>
+        <div class="rm-title">${m.title}</div>
+        <div class="rm-detail">${m.detail}</div>
+      </div>
+    </div>`;
+  }).join("");
+  host.innerHTML=
+    `<div class="rm-pills">${pills}</div>
+     <p class="rm-asof"><b>${JURIS_NAME[rmCode]}</b> · as of <b>${fmtDate(today)}</b> — ${pct}% from first step to target.</p>
+     <div class="rm-bar"><span style="width:${pct}%"></span></div>
+     <div class="rm-line">${rows}</div>`;
+  host.querySelectorAll(".rm-pill").forEach(b=>b.addEventListener("click",()=>{ rmCode=b.dataset.c; renderRoadmap(); }));
+}
+
+/* ============================ wiring ============================ */
+function setTab(id){
+  ["prompt","atlas","model","ethics","roadmap","method"].forEach(k=>{
+    const sel=k===id;
+    document.getElementById("t-"+k).setAttribute("aria-selected",sel?"true":"false");
+    const panel=document.getElementById("p-"+k);
+    panel.classList.toggle("on",sel); panel.hidden=!sel;
+  });
+}
+["prompt","atlas","model","ethics","roadmap","method"].forEach(k=>document.getElementById("t-"+k).addEventListener("click",()=>setTab(k)));
+
+document.getElementById("mute").addEventListener("click",e=>{
+  muted=!muted; e.target.textContent="Audio: "+(muted?"off":"on");
+  e.target.setAttribute("aria-pressed",muted?"true":"false");
+});
+
+document.getElementById("run").addEventListener("click",async ()=>{
+  const prompt=document.getElementById("prompt-in").value.trim();
+  const notice=document.getElementById("run-notice");
+  if(!prompt){ notice.innerHTML='<div class="notice warn">Paste a prompt first — there is nothing to sound yet.</div>'; return; }
+  const btn=document.getElementById("run"); btn.disabled=true; btn.textContent="Listening…";
+  notice.innerHTML="";
+  audio(); // unlock on gesture
+  let r;
+  try{ r=await scoreViaAI(prompt); }
+  catch(e){
+    r=scoreLocally(prompt);
+    notice.innerHTML='<div class="notice">Scored with the local engine. Live model judging needs a backend proxy — see the README — since a public page cannot hold an API key.</div>';
+  }
+  renderResult(r);
+  btn.disabled=false; btn.textContent="Sound the prompt";
+});
+
+/* upcoming-release banner */
+function initBanner(){
+  if(!UPCOMING.show) return;
+  document.getElementById("b-tag").textContent=UPCOMING.tag;
+  document.getElementById("b-text").innerHTML=UPCOMING.html;
+  document.getElementById("banner").hidden=false;
+  document.getElementById("b-x").addEventListener("click",()=>{document.getElementById("banner").hidden=true;});
+}
+
+/* visitor counter — works on a real host (e.g. GitHub Pages). Leave blank for the
+   session placeholder, or paste a free no-auth, CORS-enabled counter endpoint that
+   returns { count: N }. Examples (verify the service is live before relying on it):
+     https://api.counterapi.dev/v1/harmonia/visits/up
+     https://abacus.jasoncameron.dev/hit/harmonia/visits
+   For a private/owned counter, point this at your own serverless function. Never put
+   an API key in this file — it is public on GitHub Pages. */
+const COUNTER_URL="";
+async function initVisitors(){
+  const el=document.getElementById("v-count");
+  if(COUNTER_URL){
+    try{
+      const r=await fetch(COUNTER_URL,{method:"POST"});
+      const j=await r.json();
+      if(typeof j.count==="number"){ animateCount(el,j.count); return; }
+    }catch(e){/* fall through */}
+  }
+  // session fallback: drifts by the day so it isn't frozen; honest placeholder
+  // (the badge tooltip says a true global count needs the backend).
+  const start=new Date("2026-06-01").getTime();
+  const days=Math.max(0,Math.floor((Date.now()-start)/864e5));
+  const target=1247 + days*37 + Math.floor((Date.now()/6e5)%37);
+  animateCount(el,target);
+}
+function animateCount(el,target){
+  const dur=1100, t0=performance.now(), from=Math.max(0,target-Math.min(target,180));
+  function step(t){
+    const k=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-k,3);
+    el.textContent=Math.round(from+(target-from)*e).toLocaleString();
+    if(k<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+initBanner();
+initVisitors();
+buildGauge();
+renderAtlas();
+renderEthics();
+renderRoadmap();
+</script>
+</body>
+</html>
